@@ -1,16 +1,15 @@
 /*
  * BLN Academy — Elementor Fix CSS
  *
- * Purpose: Make Elementor containers display correctly on this theme.
- * The theme's universal reset combined with Elementor's default flex-direction:column
- * causes all content to stack in a single column. This stylesheet fixes that.
+ * Fixes the single-column layout problem. Elementor containers default to
+ * flex-direction: column. We need to force row direction on containers that
+ * hold multiple child containers (stats, features, courses).
  */
 
-/* ===== FULL-WIDTH PARENT CONTAINERS WITH MULTIPLE BOXED CHILDREN =====
-   This is the pattern used by stats, features, courses sections on this site.
-   A full-width parent contains multiple boxed child containers that should
-   display side by side. Elementor defaults to column — we force row. */
-.e-con.e-parent.e-flex.e-con-full > .e-con-inner {
+/* ===== THE KEY FIX =====
+   Any .e-con-inner that contains multiple .e-con children should display
+   as a flex row. This targets the exact nesting pattern on this site. */
+.e-con.e-con-boxed > .e-con-inner {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -19,15 +18,33 @@
   width: 100%;
 }
 
-/* Each boxed child gets equal width */
-.e-con.e-parent.e-flex.e-con-full > .e-con-inner > .e-con.e-con-boxed {
+/* Each direct child .e-con gets equal width */
+.e-con.e-con-boxed > .e-con-inner > .e-con {
   flex: 1 1 0;
   min-width: 0;
 }
 
-/* ===== BOXED PARENT CONTAINERS (section wrappers) =====
-   These are the main content sections that wrap everything.
-   They need max-width and centering. */
+/* Hero section: center content vertically */
+.elementor-page .e-con.e-parent.e-con-full:first-child > .e-con-inner,
+.elementor-page .e-con.e-parent.e-con-full:first-child > .e-con-boxed > .e-con-inner {
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Button row container: keep inline */
+.e-con.e-con-boxed > .e-con-inner > .e-con.e-con-boxed > .e-con-inner {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Widget containers inside card-like children should stack vertically */
+.e-con.e-con-boxed > .e-con-inner > .e-con > .e-con-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container width constraint */
 .elementor-page .e-con.e-parent.e-con-boxed {
   max-width: 1200px;
   margin-left: auto;
@@ -37,45 +54,23 @@
   width: 100%;
 }
 
-/* ===== FULL-WIDTH PARENT CONTAINERS (background sections) =====
-   These span full viewport width for background colors, but inner content
-   should still be constrained. */
-.elementor-page .e-con.e-parent.e-con-full > .e-con-inner {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-
-/* ===== Container default box model ===== */
-.e-con,
-.e-con-full,
-.elementor-section,
-.elementor-widget,
-.elementor-widget-wrap,
-.elementor-column,
-.elementor-column-wrap {
+/* Box model */
+.e-con, .e-con-full, .elementor-section, .elementor-widget {
   box-sizing: border-box;
 }
 
-/* ===== Widget spacing ===== */
+/* Widget spacing */
 .elementor-page .elementor-widget {
   margin-bottom: 0;
 }
 
-/* ===== Background / colour token compatibility ===== */
-.elementor-section,
-.e-con {
-  background-color: transparent;
-}
-
+/* Design tokens */
 .elementor-page {
   background-color: var(--bg, #f8fafc);
   color: var(--fg, #1e293b);
 }
 
-/* ===== RTL preservation ===== */
+/* RTL */
 html[dir="rtl"] .elementor-page .e-con,
 html[dir="rtl"] .elementor-page .elementor-section {
   direction: rtl;
@@ -84,24 +79,22 @@ html[dir="rtl"] .elementor-page .elementor-section {
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .e-con.e-parent.e-flex.e-con-full > .e-con-inner {
+  .e-con.e-con-boxed > .e-con-inner {
     flex-direction: column;
     gap: 16px;
   }
-  .e-con.e-parent.e-flex.e-con-full > .e-con-inner > .e-con.e-con-boxed {
+  .e-con.e-con-boxed > .e-con-inner > .e-con {
     flex: none;
     width: 100%;
   }
-  .elementor-page .e-con.e-parent.e-con-boxed,
-  .elementor-page .e-con.e-parent.e-con-full > .e-con-inner {
+  .elementor-page .e-con.e-parent.e-con-boxed {
     padding-left: 20px;
     padding-right: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .elementor-page .e-con.e-parent.e-con-boxed,
-  .elementor-page .e-con.e-parent.e-con-full > .e-con-inner {
+  .elementor-page .e-con.e-parent.e-con-boxed {
     padding-left: 16px;
     padding-right: 16px;
   }
