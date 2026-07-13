@@ -47,6 +47,8 @@ task( 'deploy:push', function () {
 
     $base = get( 'deploy_path' );
 
+    run( 'mkdir -p ' . $base );
+
     foreach ( $files as $file ) {
         if ( file_exists( __DIR__ . '/' . $file ) ) {
             upload( __DIR__ . '/' . $file, $base . '/' . $file );
