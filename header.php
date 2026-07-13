@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
     <div class="nav-inner">
       <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="nav-logo" data-od-id="logo">
         <span class="logo-dot"></span>
-        <?php bloginfo( 'name' ); ?>
+        <?php echo esc_html( get_bloginfo( 'name' ) ); ?>
       </a>
       <?php
       wp_nav_menu( array(

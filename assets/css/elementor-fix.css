@@ -6,15 +6,33 @@
  * container/widget spacing model.
  *
  * Strategy:
- *  - Re-establish the default box-model behaviour that Elementor relies on
- *    for its flex/grid containers without removing the reset (the reset
- *    is needed for the static PHP templates).
+ *  - Re-establish display properties that Elementor relies on for its
+ *    flex/grid containers (the universal reset doesn't zero display, but
+ *    Elementor's own CSS may be overridden by specificity issues).
  *  - Constrain the content width of the top-level Elementor container so
  *    it matches the rest of the theme (1200px).
  *  - Provide responsive padding at 768px and 480px breakpoints.
- *  - Do NOT override Elementor's grid/flex column logic — let the
- *    Elementor editor decide columns via its own controls.
  */
+
+/* ===== Container display restoration ===== */
+/* Elementor Flex containers */
+.e-con.e-flex,
+.e-con.e-flex > .e-con-inner,
+.elementor-section.elementor-section-height-min-height {
+  display: flex;
+}
+
+/* Elementor Grid containers */
+.e-con.e-grid {
+  display: grid;
+}
+
+/* Flex container children should not collapse */
+.e-con.e-flex > .e-con-inner {
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+}
 
 /* ===== Container default box model ===== */
 .e-con,
@@ -103,6 +121,10 @@ html[dir="rtl"] .elementor-page .elementor-section {
   }
   .elementor-page .elementor-widget {
     margin-bottom: 16px;
+  }
+  /* On mobile, flex containers should stack vertically */
+  .e-con.e-flex > .e-con-inner {
+    flex-direction: column;
   }
 }
 
