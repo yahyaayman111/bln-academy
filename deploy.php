@@ -34,7 +34,6 @@ task( 'deploy', [
     'deploy:push',
     'deploy:symlink',
     'deploy:cleanup',
-    'success',
 ] );
 
 task( 'deploy:push', function () {
