@@ -5,31 +5,25 @@ namespace Deployer;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-add( 'recipes', [ 'common' ] );
-
 set( 'application', 'BLN Academy Theme' );
-set( 'repository', getenv( 'GIT_REPOSITORY' ) );
-set( 'git_tty', false );
 set( 'keep_releases', 3 );
 
 host( 'production' )
     ->setHostname( getenv( 'PROD_HOSTNAME' ) )
-    ->setPort( (int) getenv( 'PROD_PORT' ) ?: 22 )
+    ->setPort( (int) ( getenv( 'PROD_PORT' ) ?: 22 ) )
     ->setRemoteUser( getenv( 'PROD_USER' ) )
     ->setIdentityFile( '~/.ssh/deploy_key' )
     ->setDeployPath( getenv( 'PROD_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
 
 host( 'staging' )
     ->setHostname( getenv( 'STAGING_HOSTNAME' ) )
-    ->setPort( (int) getenv( 'STAGING_PORT' ) ?: 22 )
+    ->setPort( (int) ( getenv( 'STAGING_PORT' ) ?: 22 ) )
     ->setRemoteUser( getenv( 'STAGING_USER' ) )
     ->setIdentityFile( '~/.ssh/deploy_key' )
     ->setDeployPath( getenv( 'STAGING_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
 
 task( 'deploy', [
     'deploy:prepare',
-    'deploy:vendors',
-    'deploy:update_code',
     'deploy:push',
     'deploy:clean',
     'success',
