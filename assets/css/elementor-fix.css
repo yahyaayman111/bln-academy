@@ -1,37 +1,51 @@
 /*
  * BLN Academy — Elementor Fix CSS
  *
- * Purpose: Resolve conflicts between the theme's universal reset
- * (`*, *::before, *::after { margin: 0; padding: 0; }`) and Elementor's
- * container/widget spacing model.
- *
- * Strategy:
- *  - Re-establish display properties that Elementor relies on for its
- *    flex/grid containers (the universal reset doesn't zero display, but
- *    Elementor's own CSS may be overridden by specificity issues).
- *  - Constrain the content width of the top-level Elementor container so
- *    it matches the rest of the theme (1200px).
- *  - Provide responsive padding at 768px and 480px breakpoints.
+ * Purpose: Make Elementor containers display correctly on this theme.
+ * The theme's universal reset combined with Elementor's default flex-direction:column
+ * causes all content to stack in a single column. This stylesheet fixes that.
  */
 
-/* ===== Container display restoration ===== */
-/* Elementor Flex containers */
-.e-con.e-flex,
-.e-con.e-flex > .e-con-inner,
-.elementor-section.elementor-section-height-min-height {
+/* ===== FULL-WIDTH PARENT CONTAINERS WITH MULTIPLE BOXED CHILDREN =====
+   This is the pattern used by stats, features, courses sections on this site.
+   A full-width parent contains multiple boxed child containers that should
+   display side by side. Elementor defaults to column — we force row. */
+.e-con.e-parent.e-flex.e-con-full > .e-con-inner {
   display: flex;
-}
-
-/* Elementor Grid containers */
-.e-con.e-grid {
-  display: grid;
-}
-
-/* Flex container children should not collapse */
-.e-con.e-flex > .e-con-inner {
+  flex-direction: row;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
+  gap: 24px;
   width: 100%;
+}
+
+/* Each boxed child gets equal width */
+.e-con.e-parent.e-flex.e-con-full > .e-con-inner > .e-con.e-con-boxed {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ===== BOXED PARENT CONTAINERS (section wrappers) =====
+   These are the main content sections that wrap everything.
+   They need max-width and centering. */
+.elementor-page .e-con.e-parent.e-con-boxed {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  width: 100%;
+}
+
+/* ===== FULL-WIDTH PARENT CONTAINERS (background sections) =====
+   These span full viewport width for background colors, but inner content
+   should still be constrained. */
+.elementor-page .e-con.e-parent.e-con-full > .e-con-inner {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 /* ===== Container default box model ===== */
@@ -45,53 +59,14 @@
   box-sizing: border-box;
 }
 
-/* Elementor sets padding on the .e-con via inline styles or `--padding*`
-   custom properties. The universal reset zeroes *everything*, so we make
-   sure the .e-con itself can still receive padding from Elementor and
-   that its children are positioned correctly. */
-.e-con > .e-con-inner,
-.elementor-section > .elementor-container,
-.elementor-section > .elementor-column-gap-default > .elementor-row {
-  margin: 0;
-  padding: 0;
-}
-
-/* ===== Top-level container width ===== */
-.elementor-page .e-con.e-parent,
-.elementor-page
-  .elementor-section.elementor-section-boxed
-  > .elementor-container {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 24px;
-  padding-right: 24px;
-  width: 100%;
-}
-
-/* ===== Inner containers should not double-pad ===== */
-.e-con .e-con,
-.elementor-section .elementor-section,
-.e-con .elementor-widget,
-.elementor-section .elementor-widget {
-  margin: 0;
-}
-
-/* Elementor's widgets rely on internal margin-bottom for vertical rhythm.
-   Re-enable that without re-introducing it for the container itself.
-   Scoped to .elementor-page so it never touches the static PHP templates. */
+/* ===== Widget spacing ===== */
 .elementor-page .elementor-widget {
-  margin-bottom: 20px;
-}
-.elementor-page .elementor-widget:last-child {
   margin-bottom: 0;
 }
 
 /* ===== Background / colour token compatibility ===== */
 .elementor-section,
 .e-con {
-  /* Allow the theme's design tokens to flow through Elementor columns
-     when the editor does not set an explicit background. */
   background-color: transparent;
 }
 
@@ -100,10 +75,7 @@
   color: var(--fg, #1e293b);
 }
 
-/* ===== RTL preservation =====
-   `dir="rtl"` lives on <html>/<body> in WordPress, never on
-   `.elementor-page` itself, so we must target from `html[dir="rtl"]`
-   to keep Elementor containers flowing in the right direction. */
+/* ===== RTL preservation ===== */
 html[dir="rtl"] .elementor-page .e-con,
 html[dir="rtl"] .elementor-page .elementor-section {
   direction: rtl;
@@ -112,31 +84,25 @@ html[dir="rtl"] .elementor-page .elementor-section {
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .elementor-page .e-con.e-parent,
-  .elementor-page
-    .elementor-section.elementor-section-boxed
-    > .elementor-container {
+  .e-con.e-parent.e-flex.e-con-full > .e-con-inner {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .e-con.e-parent.e-flex.e-con-full > .e-con-inner > .e-con.e-con-boxed {
+    flex: none;
+    width: 100%;
+  }
+  .elementor-page .e-con.e-parent.e-con-boxed,
+  .elementor-page .e-con.e-parent.e-con-full > .e-con-inner {
     padding-left: 20px;
     padding-right: 20px;
-  }
-  .elementor-page .elementor-widget {
-    margin-bottom: 16px;
-  }
-  /* On mobile, flex containers should stack vertically */
-  .e-con.e-flex > .e-con-inner {
-    flex-direction: column;
   }
 }
 
 @media (max-width: 480px) {
-  .elementor-page .e-con.e-parent,
-  .elementor-page
-    .elementor-section.elementor-section-boxed
-    > .elementor-container {
+  .elementor-page .e-con.e-parent.e-con-boxed,
+  .elementor-page .e-con.e-parent.e-con-full > .e-con-inner {
     padding-left: 16px;
     padding-right: 16px;
-  }
-  .elementor-page .elementor-widget {
-    margin-bottom: 12px;
   }
 }
