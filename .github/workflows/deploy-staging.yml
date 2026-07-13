@@ -48,4 +48,4 @@ jobs:
           PROD_PORT: ${{ secrets.PROD_PORT }}
           PROD_USER: ${{ secrets.PROD_USER }}
           PROD_DEPLOY_PATH: ${{ secrets.PROD_DEPLOY_PATH }}
-        run: vendor/bin/dep deploy staging
+        run: vendor/bin/dep deploy staging --no-hooks

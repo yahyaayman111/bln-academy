@@ -9,6 +9,11 @@ require 'recipe/common.php';
 
 set( 'application', 'BLN Academy Theme' );
 set( 'keep_releases', 3 );
+set( 'repository', 'https://github.com/yahyaayman111/bln-academy.git' );
+
+task( 'deploy:update_code', function () {
+    // No-op: we use deploy:push to upload files directly
+} );
 
 function env( string $name ): string {
     $value = getenv( $name );
