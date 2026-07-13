@@ -15,20 +15,33 @@ jobs:
           tools: composer:v2
 
       - name: Install SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          PROD_HOSTNAME: ${{ secrets.PROD_HOSTNAME }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          printf '%s' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.PROD_HOSTNAME }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H -p "$PROD_PORT" "$PROD_HOSTNAME" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Install Deployer
         run: composer require --no-interaction deployer/deployer:^7.0
 
+      - name: Verify SSH connection
+        env:
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_HOSTNAME: ${{ secrets.PROD_HOSTNAME }}
+        run: |
+          ssh -p "$PROD_PORT" -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key \
+              "$PROD_USER@$PROD_HOSTNAME" "echo connected" || echo "SSH FAILED"
+
       - name: Deploy to Production
-        run: vendor/bin/dep deploy production
         env:
           GIT_REPOSITORY: ${{ github.server_url }}/${{ github.repository }}.git
           PROD_HOSTNAME: ${{ secrets.PROD_HOSTNAME }}
           PROD_PORT: ${{ secrets.PROD_PORT }}
           PROD_USER: ${{ secrets.PROD_USER }}
           PROD_DEPLOY_PATH: ${{ secrets.PROD_DEPLOY_PATH }}
+        run: vendor/bin/dep deploy production

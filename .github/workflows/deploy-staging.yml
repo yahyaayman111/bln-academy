@@ -15,20 +15,33 @@ jobs:
           tools: composer:v2
 
       - name: Install SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          STAGING_HOSTNAME: ${{ secrets.STAGING_HOSTNAME }}
+          STAGING_PORT: ${{ secrets.STAGING_PORT }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          printf '%s' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.STAGING_HOSTNAME }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H -p "$STAGING_PORT" "$STAGING_HOSTNAME" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Install Deployer
         run: composer require --no-interaction deployer/deployer:^7.0
 
+      - name: Verify SSH connection
+        env:
+          STAGING_USER: ${{ secrets.STAGING_USER }}
+          STAGING_PORT: ${{ secrets.STAGING_PORT }}
+          STAGING_HOSTNAME: ${{ secrets.STAGING_HOSTNAME }}
+        run: |
+          ssh -p "$STAGING_PORT" -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key \
+              "$STAGING_USER@$STAGING_HOSTNAME" "echo connected" || echo "SSH FAILED"
+
       - name: Deploy to Staging
-        run: vendor/bin/dep deploy staging
         env:
           GIT_REPOSITORY: ${{ github.server_url }}/${{ github.repository }}.git
           STAGING_HOSTNAME: ${{ secrets.STAGING_HOSTNAME }}
           STAGING_PORT: ${{ secrets.STAGING_PORT }}
           STAGING_USER: ${{ secrets.STAGING_USER }}
           STAGING_DEPLOY_PATH: ${{ secrets.STAGING_DEPLOY_PATH }}
+        run: vendor/bin/dep deploy staging
