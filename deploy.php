@@ -5,11 +5,7 @@ namespace Deployer;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-require 'recipe/common.php';
-
 set( 'application', 'BLN Academy Theme' );
-set( 'keep_releases', 3 );
-set( 'repository', 'https://github.com/yahyaayman111/bln-academy.git' );
 
 function env( string $name ): string {
     $value = getenv( $name );
@@ -30,25 +26,9 @@ host( 'staging' )
     ->setIdentityFile( '~/.ssh/deploy_key' )
     ->setDeployPath( env( 'STAGING_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
 
-task( 'deploy:update_code', function () {
-    // No-op: we use deploy:push to upload files directly
-} );
-
-task( 'deploy:env', function () {
-    // No-op: we don't use .env files for WordPress theme
-} );
-
-task( 'deploy:vendors', function () {
-    // No-op: no composer dependencies
-} );
-
-task( 'deploy:shared', function () {
-    // No-op: no shared files
-} );
-
-task( 'deploy:writable', function () {
-    // No-op: standard file permissions are fine
-} );
+task( 'deploy', [
+    'deploy:push',
+] );
 
 task( 'deploy:push', function () {
     $files = [
@@ -65,20 +45,21 @@ task( 'deploy:push', function () {
         'template-parts',
     ];
 
+    $base = env( 'STAGING_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy';
+
+    cd( $base );
+
     foreach ( $files as $file ) {
         if ( file_exists( __DIR__ . '/' . $file ) ) {
-            upload( __DIR__ . '/' . $file, '{{release_path}}/' . $file );
+            upload( __DIR__ . '/' . $file, $base . '/' . $file );
         }
     }
 
     foreach ( $dirs as $dir ) {
         $localPath = __DIR__ . '/' . $dir;
         if ( is_dir( $localPath ) ) {
-            upload( $localPath . '/', '{{release_path}}/' . $dir . '/' );
+            run( 'mkdir -p ' . $base . '/' . $dir );
+            upload( $localPath . '/', $base . '/' . $dir . '/' );
         }
     }
 } );
-
-after( 'deploy:release', 'deploy:push' );
-
-after( 'deploy:failed', 'deploy:unlock' );
