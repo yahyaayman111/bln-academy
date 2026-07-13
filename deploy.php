@@ -8,19 +8,24 @@ require_once __DIR__ . '/vendor/autoload.php';
 set( 'application', 'BLN Academy Theme' );
 set( 'keep_releases', 3 );
 
+function env( string $name ): string {
+    $value = getenv( $name );
+    return ( $value === false || $value === '' ) ? '' : $value;
+}
+
 host( 'production' )
-    ->setHostname( getenv( 'PROD_HOSTNAME' ) )
-    ->setPort( (int) ( getenv( 'PROD_PORT' ) ?: 22 ) )
-    ->setRemoteUser( getenv( 'PROD_USER' ) )
+    ->setHostname( env( 'PROD_HOSTNAME' ) )
+    ->setPort( (int) ( env( 'PROD_PORT' ) ?: 22 ) )
+    ->setRemoteUser( env( 'PROD_USER' ) )
     ->setIdentityFile( '~/.ssh/deploy_key' )
-    ->setDeployPath( getenv( 'PROD_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
+    ->setDeployPath( env( 'PROD_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
 
 host( 'staging' )
-    ->setHostname( getenv( 'STAGING_HOSTNAME' ) )
-    ->setPort( (int) ( getenv( 'STAGING_PORT' ) ?: 22 ) )
-    ->setRemoteUser( getenv( 'STAGING_USER' ) )
+    ->setHostname( env( 'STAGING_HOSTNAME' ) )
+    ->setPort( (int) ( env( 'STAGING_PORT' ) ?: 22 ) )
+    ->setRemoteUser( env( 'STAGING_USER' ) )
     ->setIdentityFile( '~/.ssh/deploy_key' )
-    ->setDeployPath( getenv( 'STAGING_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
+    ->setDeployPath( env( 'STAGING_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
 
 task( 'deploy', [
     'deploy:prepare',

@@ -44,4 +44,8 @@ jobs:
           STAGING_PORT: ${{ secrets.STAGING_PORT }}
           STAGING_USER: ${{ secrets.STAGING_USER }}
           STAGING_DEPLOY_PATH: ${{ secrets.STAGING_DEPLOY_PATH }}
+          PROD_HOSTNAME: ${{ secrets.PROD_HOSTNAME }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_DEPLOY_PATH: ${{ secrets.PROD_DEPLOY_PATH }}
         run: vendor/bin/dep deploy staging
