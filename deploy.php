@@ -11,10 +11,6 @@ set( 'application', 'BLN Academy Theme' );
 set( 'keep_releases', 3 );
 set( 'repository', 'https://github.com/yahyaayman111/bln-academy.git' );
 
-task( 'deploy:update_code', function () {
-    // No-op: we use deploy:push to upload files directly
-} );
-
 function env( string $name ): string {
     $value = getenv( $name );
     return ( $value === false || $value === '' ) ? '' : $value;
@@ -34,12 +30,25 @@ host( 'staging' )
     ->setIdentityFile( '~/.ssh/deploy_key' )
     ->setDeployPath( env( 'STAGING_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy' );
 
-task( 'deploy', [
-    'deploy:prepare',
-    'deploy:push',
-    'deploy:symlink',
-    'deploy:cleanup',
-] );
+task( 'deploy:update_code', function () {
+    // No-op: we use deploy:push to upload files directly
+} );
+
+task( 'deploy:env', function () {
+    // No-op: we don't use .env files for WordPress theme
+} );
+
+task( 'deploy:vendors', function () {
+    // No-op: no composer dependencies
+} );
+
+task( 'deploy:shared', function () {
+    // No-op: no shared files
+} );
+
+task( 'deploy:writable', function () {
+    // No-op: standard file permissions are fine
+} );
 
 task( 'deploy:push', function () {
     $files = [
@@ -69,5 +78,7 @@ task( 'deploy:push', function () {
         }
     }
 } );
+
+after( 'deploy:release', 'deploy:push' );
 
 after( 'deploy:failed', 'deploy:unlock' );
