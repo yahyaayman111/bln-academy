@@ -32,7 +32,8 @@ host( 'staging' )
 task( 'deploy', [
     'deploy:prepare',
     'deploy:push',
-    'deploy:clean',
+    'deploy:symlink',
+    'deploy:cleanup',
     'success',
 ] );
 
@@ -53,14 +54,14 @@ task( 'deploy:push', function () {
 
     foreach ( $files as $file ) {
         if ( file_exists( __DIR__ . '/' . $file ) ) {
-            upload( __DIR__ . '/' . $file, '{{release_or_current_path}}/' . $file );
+            upload( __DIR__ . '/' . $file, '{{release_path}}/' . $file );
         }
     }
 
     foreach ( $dirs as $dir ) {
         $localPath = __DIR__ . '/' . $dir;
         if ( is_dir( $localPath ) ) {
-            upload( $localPath . '/', '{{release_or_current_path}}/' . $dir . '/' );
+            upload( $localPath . '/', '{{release_path}}/' . $dir . '/' );
         }
     }
 } );
