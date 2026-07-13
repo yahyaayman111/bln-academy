@@ -5,6 +5,8 @@ namespace Deployer;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+require 'recipe/common.php';
+
 set( 'application', 'BLN Academy Theme' );
 set( 'keep_releases', 3 );
 

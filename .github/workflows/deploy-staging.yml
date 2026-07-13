@@ -26,7 +26,7 @@ jobs:
           ssh-keyscan -H -p "$STAGING_PORT" "$STAGING_HOSTNAME" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Install Deployer
-        run: composer require --no-interaction deployer/deployer:^7.0
+        run: composer require --no-interaction deployer/deployer:^7.0 deployer/recipes:^7.0
 
       - name: Verify SSH connection
         env:
