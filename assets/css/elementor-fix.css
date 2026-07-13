@@ -8,8 +8,10 @@
 
 /* ===== THE KEY FIX =====
    Any .e-con-inner that contains multiple .e-con children should display
-   as a flex row. This targets the exact nesting pattern on this site. */
-.e-con.e-con-boxed > .e-con-inner {
+   as a flex row. This targets the exact nesting pattern on this site.
+   Specificity raised with .e-parent + .e-flex so it beats Elementor's
+   base .e-con > .e-con-inner styling. */
+.e-con.e-parent.e-flex.e-con-boxed > .e-con-inner {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -18,27 +20,30 @@
   width: 100%;
 }
 
-/* Each direct child .e-con gets equal width */
-.e-con.e-con-boxed > .e-con-inner > .e-con {
+/* Each direct boxed child gets equal width. Restricted to .e-con-boxed
+   children so a stray .e-con-full child (intended to span the row) is
+   not forced into flex: 1. */
+.e-con.e-con-boxed > .e-con-inner > .e-con.e-con-boxed {
   flex: 1 1 0;
   min-width: 0;
 }
 
-/* Hero section: center content vertically */
-.elementor-page .e-con.e-parent.e-con-full:first-child > .e-con-inner,
-.elementor-page .e-con.e-parent.e-con-full:first-child > .e-con-boxed > .e-con-inner {
+/* Hero section: center content vertically.
+   `:first-of-type` is more robust than `:first-child` because siblings
+   such as an Elementor header / admin bar can precede the hero without
+   breaking the match. */
+.elementor-page .e-con.e-parent.e-con-full:first-of-type > .e-con-inner,
+.elementor-page .e-con.e-parent.e-con-full:first-of-type > .e-con-boxed > .e-con-inner {
   align-items: center;
   min-height: 100vh;
 }
 
-/* Button row container: keep inline */
-.e-con.e-con-boxed > .e-con-inner > .e-con.e-con-boxed > .e-con-inner {
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-/* Widget containers inside card-like children should stack vertically */
+/* Widget containers inside card-like children should stack vertically.
+   This rule ONLY matches 3 levels deep (e-con-boxed > e-con-inner >
+   e-con > e-con-inner) and is intentionally NOT a button-row rule —
+   button rows in the hero / CTA should be authored with Elementor's own
+   inline-width controls, not via a CSS hack that would also flatten
+   card internals. */
 .e-con.e-con-boxed > .e-con-inner > .e-con > .e-con-inner {
   display: flex;
   flex-direction: column;
@@ -59,8 +64,13 @@
   box-sizing: border-box;
 }
 
-/* Widget spacing */
+/* Widget spacing — responsive ladder so card internals keep vertical
+   rhythm on every breakpoint. `:last-child` zeroes the trailing margin
+   so the parent container's gap controls the next card. */
 .elementor-page .elementor-widget {
+  margin-bottom: 20px;
+}
+.elementor-page .elementor-widget:last-child {
   margin-bottom: 0;
 }
 
@@ -79,11 +89,11 @@ html[dir="rtl"] .elementor-page .elementor-section {
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .e-con.e-con-boxed > .e-con-inner {
+  .e-con.e-parent.e-flex.e-con-boxed > .e-con-inner {
     flex-direction: column;
     gap: 16px;
   }
-  .e-con.e-con-boxed > .e-con-inner > .e-con {
+  .e-con.e-con-boxed > .e-con-inner > .e-con.e-con-boxed {
     flex: none;
     width: 100%;
   }
@@ -91,11 +101,17 @@ html[dir="rtl"] .elementor-page .elementor-section {
     padding-left: 20px;
     padding-right: 20px;
   }
+  .elementor-page .elementor-widget {
+    margin-bottom: 16px;
+  }
 }
 
 @media (max-width: 480px) {
   .elementor-page .e-con.e-parent.e-con-boxed {
     padding-left: 16px;
     padding-right: 16px;
+  }
+  .elementor-page .elementor-widget {
+    margin-bottom: 12px;
   }
 }
