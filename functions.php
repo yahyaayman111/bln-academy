@@ -9,7 +9,8 @@ function bln_academy_setup() {
     add_theme_support( 'post-thumbnails' );
     add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ) );
     add_theme_support( 'customize-selective-refresh-widgets' );
-    add_theme_support( 'elementor', array( 'full-width' ) );
+    add_theme_support( 'elementor', array( 'full-width' => true ) );
+    add_theme_support( 'elementor-pro' );
     add_theme_support( 'editor-styles' );
 
     register_nav_menus( array(
@@ -43,6 +44,20 @@ function bln_academy_enqueue_assets() {
         BLN_THEME_VERSION
     );
 
+    wp_enqueue_style(
+        'bln-academy-elementor-fix',
+        get_template_directory_uri() . '/assets/css/elementor-fix.css',
+        array( 'bln-academy-style' ),
+        BLN_THEME_VERSION
+    );
+
+    wp_enqueue_style(
+        'bln-academy-animations',
+        get_template_directory_uri() . '/assets/css/animations.css',
+        array( 'bln-academy-style' ),
+        BLN_THEME_VERSION
+    );
+
     wp_enqueue_script(
         'bln-global',
         get_template_directory_uri() . '/assets/js/bln-global.js',
@@ -71,21 +86,23 @@ function bln_academy_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'bln_academy_enqueue_assets' );
 
+function bln_academy_fallback_nav() {
+    echo '<ul class="nav-links" id="navLinks">';
+    echo '<li><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'الرئيسية', 'bln-academy' ) . '</a></li>';
+    echo '<li><a href="' . esc_url( home_url( '/courses' ) ) . '">' . esc_html__( 'الكورسات', 'bln-academy' ) . '</a></li>';
+    echo '<li><a href="' . esc_url( home_url( '/about' ) ) . '">' . esc_html__( 'عن الأكاديمية', 'bln-academy' ) . '</a></li>';
+    echo '<li><a href="' . esc_url( home_url( '/contact' ) ) . '">' . esc_html__( 'اتصل بنا', 'bln-academy' ) . '</a></li>';
+    echo '<li><a href="' . esc_url( home_url( '/register' ) ) . '" class="nav-cta">' . esc_html__( 'سجّل الآن', 'bln-academy' ) . '</a></li>';
+    echo '</ul>';
+}
+
 function bln_academy_body_classes( $classes ) {
     if ( is_rtl() ) {
         $classes[] = 'rtl';
     }
-    if ( class_exists( '\\Elementor\\Plugin' ) ) {
+    if ( class_exists( '\Elementor\Plugin' ) ) {
         $classes[] = 'elementor-enabled';
     }
     return $classes;
 }
 add_filter( 'body_class', 'bln_academy_body_classes' );
-
-function bln_academy_disable_elementor_header_footer() {
-    if ( class_exists( '\\Elementor\\Plugin' ) ) {
-        add_filter( 'elementor/theme/do_location/header', '__return_false' );
-        add_filter( 'elementor/theme/do_location/footer', '__return_false' );
-    }
-}
-add_action( 'wp', 'bln_academy_disable_elementor_header_footer' );

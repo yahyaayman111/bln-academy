@@ -2,11 +2,12 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
+  <?php if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_location( 'footer' ) ) : ?>
   <footer class="footer" data-od-id="footer">
     <div class="footer-inner">
       <div>
-        <div class="footer-brand"><?php bloginfo( 'name' ); ?></div>
-        <p class="footer-desc"><?php bloginfo( 'description' ); ?></p>
+        <div class="footer-brand"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
+        <p class="footer-desc"><?php echo esc_html( get_bloginfo( 'description' ) ); ?></p>
       </div>
       <div class="footer-col">
         <h4><?php esc_html_e( 'روابط سريعة', 'bln-academy' ); ?></h4>
@@ -43,10 +44,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>. <?php esc_html_e( 'جميع الحقوق محفوظة.', 'bln-academy' ); ?></span>
+      <span>&copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( get_bloginfo( 'name' ) ); ?>. <?php esc_html_e( 'جميع الحقوق محفوظة.', 'bln-academy' ); ?></span>
       <span><?php esc_html_e( 'صُنع بشغف', 'bln-academy' ); ?> <a href="#"><?php esc_html_e( 'ما وراء الأرقام', 'bln-academy' ); ?></a></span>
     </div>
   </footer>
+  <?php endif; ?>
 
   <?php wp_footer(); ?>
 </body>

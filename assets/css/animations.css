@@ -1,0 +1,111 @@
+/*
+ * BLN Academy — Animations CSS
+ *
+ * Centralised animation rules ported from the Vercel reference.
+ * Loaded after the main stylesheet so it can extend / override token-driven
+ * transitions without re-declaring the @keyframes (those already live in
+ * style.css and are referenced here to avoid duplication).
+ */
+
+/* ===== Floating alphanumeric motif animation =====
+   The `motifFloat` keyframes are defined in style.css (lines 237-241).
+   Elementor-based sections need the same animation rules so that any
+   motif characters placed inside an Elementor container float identically. */
+.elementor-page .motifs,
+.e-con .motifs,
+.elementor-section .motifs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.elementor-page .motif-char,
+.e-con .motif-char,
+.elementor-section .motif-char {
+  position: absolute;
+  font-family: var(--font-mono, "Anonymous Pro", monospace);
+  color: rgba(201, 162, 74, 0.12);
+  font-weight: 700;
+  user-select: none;
+  animation: motifFloat 20s ease-in-out infinite;
+}
+.elementor-page .motif-char:nth-child(odd),
+.e-con .motif-char:nth-child(odd),
+.elementor-section .motif-char:nth-child(odd) {
+  animation-direction: reverse;
+}
+
+/* ===== Card hover lift (feature / course / generic) ===== */
+.elementor-page .feature-card,
+.elementor-page .course-card,
+.elementor-page .bln-card,
+.e-con .feature-card,
+.e-con .course-card {
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+}
+.elementor-page .feature-card:hover,
+.elementor-page .course-card:hover,
+.elementor-page .bln-card:hover,
+.e-con .feature-card:hover,
+.e-con .course-card:hover {
+  box-shadow: var(--shadow-card-hover, 0 4px 24px rgba(21, 50, 91, 0.14));
+  transform: translateY(-3px);
+}
+
+/* ===== Button hover (applied to any anchor styled as a button) ===== */
+.elementor-page .btn-primary,
+.elementor-page .btn-secondary,
+.elementor-page .btn-dark,
+.e-con .btn-primary,
+.e-con .btn-secondary,
+.e-con .btn-dark {
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.elementor-page .btn-primary:hover,
+.e-con .btn-primary:hover {
+  background: #d4ad55;
+  transform: translateY(-2px);
+}
+.elementor-page .btn-secondary:hover,
+.e-con .btn-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+.elementor-page .btn-dark:hover,
+.e-con .btn-dark:hover {
+  background: #0f2744;
+  transform: translateY(-2px);
+}
+
+/* ===== Nav scroll shadow (Elementor-rendered header) ===== */
+.elementor-page .elementor-location-header,
+.elementor-page header.elementor-section,
+.e-con header.elementor-section {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: box-shadow 0.3s ease;
+}
+.elementor-page .elementor-location-header.is-scrolled,
+.elementor-page header.elementor-section.is-scrolled {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,120 @@
+/*
+ * BLN Academy — Elementor Fix CSS
+ *
+ * Purpose: Resolve conflicts between the theme's universal reset
+ * (`*, *::before, *::after { margin: 0; padding: 0; }`) and Elementor's
+ * container/widget spacing model.
+ *
+ * Strategy:
+ *  - Re-establish the default box-model behaviour that Elementor relies on
+ *    for its flex/grid containers without removing the reset (the reset
+ *    is needed for the static PHP templates).
+ *  - Constrain the content width of the top-level Elementor container so
+ *    it matches the rest of the theme (1200px).
+ *  - Provide responsive padding at 768px and 480px breakpoints.
+ *  - Do NOT override Elementor's grid/flex column logic — let the
+ *    Elementor editor decide columns via its own controls.
+ */
+
+/* ===== Container default box model ===== */
+.e-con,
+.e-con-full,
+.elementor-section,
+.elementor-widget,
+.elementor-widget-wrap,
+.elementor-column,
+.elementor-column-wrap {
+  box-sizing: border-box;
+}
+
+/* Elementor sets padding on the .e-con via inline styles or `--padding*`
+   custom properties. The universal reset zeroes *everything*, so we make
+   sure the .e-con itself can still receive padding from Elementor and
+   that its children are positioned correctly. */
+.e-con > .e-con-inner,
+.elementor-section > .elementor-container,
+.elementor-section > .elementor-column-gap-default > .elementor-row {
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Top-level container width ===== */
+.elementor-page .e-con.e-parent,
+.elementor-page
+  .elementor-section.elementor-section-boxed
+  > .elementor-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  width: 100%;
+}
+
+/* ===== Inner containers should not double-pad ===== */
+.e-con .e-con,
+.elementor-section .elementor-section,
+.e-con .elementor-widget,
+.elementor-section .elementor-widget {
+  margin: 0;
+}
+
+/* Elementor's widgets rely on internal margin-bottom for vertical rhythm.
+   Re-enable that without re-introducing it for the container itself.
+   Scoped to .elementor-page so it never touches the static PHP templates. */
+.elementor-page .elementor-widget {
+  margin-bottom: 20px;
+}
+.elementor-page .elementor-widget:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Background / colour token compatibility ===== */
+.elementor-section,
+.e-con {
+  /* Allow the theme's design tokens to flow through Elementor columns
+     when the editor does not set an explicit background. */
+  background-color: transparent;
+}
+
+.elementor-page {
+  background-color: var(--bg, #f8fafc);
+  color: var(--fg, #1e293b);
+}
+
+/* ===== RTL preservation =====
+   `dir="rtl"` lives on <html>/<body> in WordPress, never on
+   `.elementor-page` itself, so we must target from `html[dir="rtl"]`
+   to keep Elementor containers flowing in the right direction. */
+html[dir="rtl"] .elementor-page .e-con,
+html[dir="rtl"] .elementor-page .elementor-section {
+  direction: rtl;
+  text-align: right;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .elementor-page .e-con.e-parent,
+  .elementor-page
+    .elementor-section.elementor-section-boxed
+    > .elementor-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .elementor-page .elementor-widget {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .elementor-page .e-con.e-parent,
+  .elementor-page
+    .elementor-section.elementor-section-boxed
+    > .elementor-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .elementor-page .elementor-widget {
+    margin-bottom: 12px;
+  }
+}

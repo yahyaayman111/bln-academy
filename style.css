@@ -617,6 +617,47 @@ body {
   line-height: 1.65;
 }
 
+/* ===== Elementor Compatibility (Design Token Bridge) =====
+   These rules ensure the theme's design tokens (defined in :root)
+   flow into Elementor-rendered sections and that the RTL direction
+   is preserved inside Elementor containers. Keep this section
+   minimal — heavier Elementor-specific overrides live in
+   assets/css/elementor-fix.css. */
+
+/* .motifs container — Elementor-targeted variant.
+   The base .motifs styles are defined above (lines ~221-227);
+   this block re-applies them with the same specificity to
+   sections built in Elementor so floating characters work
+   inside the page builder. */
+.elementor-page .motifs,
+.elementor-section .motifs,
+.e-con .motifs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* RTL preservation — make sure the Arabic-first direction flows
+   through every Elementor container, not just the document body.
+   `dir="rtl"` lives on <html>/<body> in WordPress, so we only target
+   from `html[dir="rtl"]`; the `.elementor-page[dir="rtl"]` /
+   `.e-con[dir="rtl"]` variants would never match. */
+html[dir="rtl"] .elementor-page,
+html[dir="rtl"] .elementor-section,
+html[dir="rtl"] .e-con {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Design token bridge — let the theme's --bg / --fg colours show
+   through Elementor sections that do not set their own. */
+.elementor-page {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .nav-links { display: none; }
