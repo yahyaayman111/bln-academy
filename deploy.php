@@ -45,9 +45,7 @@ task( 'deploy:push', function () {
         'template-parts',
     ];
 
-    $base = env( 'STAGING_DEPLOY_PATH' ) . '/wp-content/themes/bln-academy';
-
-    cd( $base );
+    $base = get( 'deploy_path' );
 
     foreach ( $files as $file ) {
         if ( file_exists( __DIR__ . '/' . $file ) ) {
